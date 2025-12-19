@@ -1,4 +1,4 @@
-# Memory Palace Breakout 🔴🧠
+# 🧠🔴Memory Palace Breakout 🔴🧠
 
 A revolutionary AI-enhanced Breakout game that analyzes your motor control patterns and builds a cognitive profile of your hand-eye coordination skills in real-time.
 
