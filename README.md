@@ -193,11 +193,11 @@ This project showcases Kiro AI's development capabilities:
 
 <img width="1918" height="1198" alt="1 Main page" src="https://github.com/user-attachments/assets/5fffbbaf-f534-4663-b8a4-49ff7c9a1396" />
 
-<img width="1918" height="1198" alt="2 Playing Area" src="https://github.com/user-attachments/assets/db597658-30bb-4f42-b52c-57b12b03797c" />
+<img width="1600" height="861" alt="1" src="https://github.com/user-attachments/assets/78ef9703-34d5-4091-8275-2a795d43c8a4" />
 
-<img width="1918" height="1198" alt="3 Results" src="https://github.com/user-attachments/assets/1431908c-806c-4603-bf7d-e5404a61e54d" />
+<img width="1607" height="850" alt="2" src="https://github.com/user-attachments/assets/2288fbbd-aa59-4741-836a-24ff15332ea7" />
 
-<img width="1024" height="1536" alt="Game Details" src="https://github.com/user-attachments/assets/e5ab44c1-9161-41e0-a911-653e16f4bf75" />
+<img width="1605" height="856" alt="3" src="https://github.com/user-attachments/assets/c0a15422-d8f4-463e-a740-32b7c9365cc3" />
 
 
 ---
