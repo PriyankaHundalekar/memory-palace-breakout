@@ -197,6 +197,7 @@ This project showcases Kiro AI's development capabilities:
 ![Uploading Game Details.png…]()
 
 
+
 ---
 
 **Break bricks, build your memory palace, and discover your cognitive patterns! 🧠🎮✨**
