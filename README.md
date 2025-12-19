@@ -191,8 +191,6 @@ This project showcases Kiro AI's development capabilities:
 
 ![Cover Photo](https://github.com/user-attachments/assets/539a87c2-1cd7-48ba-afc8-4868c1f581cd)
 
-<img width="1918" height="1198" alt="1 Main page" src="https://github.com/user-attachments/assets/5fffbbaf-f534-4663-b8a4-49ff7c9a1396" />
-
 <img width="1600" height="861" alt="1" src="https://github.com/user-attachments/assets/78ef9703-34d5-4091-8275-2a795d43c8a4" />
 
 <img width="1607" height="850" alt="2" src="https://github.com/user-attachments/assets/2288fbbd-aa59-4741-836a-24ff15332ea7" />
