@@ -2,6 +2,9 @@
 
 A revolutionary AI-enhanced Breakout game that analyzes your motor control patterns and builds a cognitive profile of your hand-eye coordination skills in real-time.
 
+<img width="1536" height="1024" alt="Cover Image" src="https://github.com/user-attachments/assets/b7109b7a-dab7-44a2-a91a-6b97fc6f52d1" />
+
+
 ## 🎮 Game Features
 
 ### Enhanced Breakout Gameplay
@@ -184,6 +187,13 @@ This project showcases Kiro AI's development capabilities:
 - Large, immersive game canvas with stunning visual effects
 - Comprehensive AI personality that learns your playing style
 - Detailed cognitive profiling and performance metrics
+
+<img width="1918" height="1198" alt="1 Main page" src="https://github.com/user-attachments/assets/5fffbbaf-f534-4663-b8a4-49ff7c9a1396" />
+
+<img width="1918" height="1198" alt="2 Playing Area" src="https://github.com/user-attachments/assets/db597658-30bb-4f42-b52c-57b12b03797c" />
+
+<img width="1918" height="1198" alt="3 Results" src="https://github.com/user-attachments/assets/1431908c-806c-4603-bf7d-e5404a61e54d" />
+
 
 ---
 
