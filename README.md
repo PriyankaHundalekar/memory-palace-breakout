@@ -194,10 +194,6 @@ This project showcases Kiro AI's development capabilities:
 
 <img width="1918" height="1198" alt="3 Results" src="https://github.com/user-attachments/assets/1431908c-806c-4603-bf7d-e5404a61e54d" />
 
-![Uploading Game Details.png…]()
-
-
-
 ---
 
 **Break bricks, build your memory palace, and discover your cognitive patterns! 🧠🎮✨**
