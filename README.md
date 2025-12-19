@@ -188,11 +188,17 @@ This project showcases Kiro AI's development capabilities:
 - Comprehensive AI personality that learns your playing style
 - Detailed cognitive profiling and performance metrics
 
+
+![Cover Photo](https://github.com/user-attachments/assets/539a87c2-1cd7-48ba-afc8-4868c1f581cd)
+
 <img width="1918" height="1198" alt="1 Main page" src="https://github.com/user-attachments/assets/5fffbbaf-f534-4663-b8a4-49ff7c9a1396" />
 
 <img width="1918" height="1198" alt="2 Playing Area" src="https://github.com/user-attachments/assets/db597658-30bb-4f42-b52c-57b12b03797c" />
 
 <img width="1918" height="1198" alt="3 Results" src="https://github.com/user-attachments/assets/1431908c-806c-4603-bf7d-e5404a61e54d" />
+
+<img width="1024" height="1536" alt="Game Details" src="https://github.com/user-attachments/assets/e5ab44c1-9161-41e0-a911-653e16f4bf75" />
+
 
 ---
 
