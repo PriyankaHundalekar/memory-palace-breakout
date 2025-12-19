@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Palace Breakout - AI-Enhanced Classic</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overflow: hidden;
+            height: 100%;
+        }
+
+        body {
+            font-family: 'MS Sans Serif', sans-serif;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,0,150,0.3), transparent),
+                radial-gradient(circle at 80% 20%, rgba(0,255,255,0.3), transparent),
+                radial-gradient(circle at 40% 40%, rgba(255,255,0,0.3), transparent),
+                linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            animation: backgroundShift 15s ease-in-out infinite alternate;
+            cursor: none;
+            overflow: hidden;
+        }
+
+        @keyframes backgroundShift {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(30deg); }
+        }
+
+        .desktop {
+            width: 98vw;
+            max-width: 1600px;
+            height: 90vh;
+            max-height: 850px;
+        }
+
+        .window {
+            width: 100%;
+            height: 100%;
+            background: #c0c0c0;
+            border: 2px outset #c0c0c0;
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .title-bar {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            padding: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .title-bar-text {
+            padding: 2px 6px;
+            text-shadow: 0 0 10px #ff6b6b;
+            animation: neonPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from { text-shadow: 0 0 10px #ff6b6b; }
+            to { text-shadow: 0 0 5px #ff6b6b; }
+        }
+
+        .title-bar-controls {
+            display: flex;
+        }
+
+        .title-bar-controls button {
+            width: 16px;
+            height: 14px;
+            border: 1px outset #c0c0c0;
+            background: #c0c0c0;
+            font-size: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 1px;
+        }
+
+        .window-body {
+            padding: 10px;
+            height: calc(100% - 22px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+            border: 2px inset #c0c0c0;
+            border-radius: 8px;
+        }
+
+        .stats-panel {
+            display: flex;
+            gap: 25px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+            animation: scoreGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes scoreGlow {
+            from { color: #1e3a8a; }
+            to { color: #ff6b6b; text-shadow: 0 0 8px #ff6b6b; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .retro-btn {
+            background: linear-gradient(145deg, #e6e6e6, #c0c0c0);
+            border: 2px outset #c0c0c0;
+            padding: 6px 15px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .retro-btn:hover {
+            background: linear-gradient(145deg, #f0f0f0, #d4d4d4);
+            box-shadow: 0 0 15px rgba(255,107,107,0.4);
+            transform: translateY(-1px);
+        }
+
+        .retro-btn:active {
+            border: 2px inset #c0c0c0;
+        }
+
+        .game-area {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .game-container {
+            flex: 2;
+            background: linear-gradient(145deg, #000000, #1a1a1a);
+            border: 3px inset #c0c0c0;
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 30px rgba(255,107,107,0.2),
+                inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+            min-height: 550px;
+            min-width: 650px;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255,107,107,0.1), transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(0,255,255,0.1), transparent 50%);
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        #gameCanvas {
+            border: 2px solid #ff6b6b;
+            border-radius: 8px;
+            box-shadow: 
+                0 0 20px rgba(255,107,107,0.3),
+                inset 0 0 10px rgba(255,107,107,0.1);
+            background: #000;
+            display: block;
+            margin: 0 auto;
+            cursor: none;
+        }
+
+        .game-status {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b6b;
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px 25px;
+            background: linear-gradient(145deg, rgba(0,0,0,0.8), rgba(26,26,26,0.8));
+            border: 2px solid #ff6b6b;
+            border-radius: 25px;
+            box-shadow: 0 0 15px rgba(255,107,107,0.3);
+            animation: statusGlow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #ff6b6b;
+        }
+
+        @keyframes statusGlow {
+            from { 
+                box-shadow: 0 0 15px rgba(255,107,107,0.3);
+            }
+            to { 
+                box-shadow: 0 0 25px rgba(255,107,107,0.6);
+            }
+        }
+
+        .ai-panel {
+            width: 380px;
+            min-width: 380px;
+            max-width: 380px;
+            background: linear-gradient(145deg, #f8f8f8, #e8e8e8);
+            border: 3px inset #c0c0c0;
+            border-radius: 10px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 
+                0 0 20px rgba(0,0,0,0.2),
+                inset 0 0 10px rgba(255,255,255,0.5);
+            overflow: hidden;
+            max-height: 100%;
+            height: fit-content;
+            flex-shrink: 0;
+        }
+
+        .ai-avatar {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .avatar-face {
+            font-size: 50px;
+            animation: aiPulse 2s ease-in-out infinite;
+            background: radial-gradient(circle, #ff6b6b, #ee5a24);
+            border-radius: 50%;
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            box-shadow: 
+                0 0 25px rgba(255,107,107,0.5),
+                inset 0 0 20px rgba(255,255,255,0.2);
+            border: 3px solid #c44569;
+        }
+
+        @keyframes aiPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 25px rgba(255,107,107,0.5);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 0 35px rgba(255,107,107,0.8);
+            }
+        }
+
+        .thought-bubble {
+            background: linear-gradient(145deg, #ffffe0, #ffffcc);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 8px;
+            font-size: 11px;
+            position: relative;
+            animation: thoughtFloat 3s ease-in-out infinite;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        @keyframes thoughtFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .thought-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 25px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #ffffe0;
+        }
+
+        .ai-mood {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 6px;
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+
+        .ai-insights {
+            padding: 10px;
+            background: linear-gradient(145deg, #ffffff, #f0f8ff);
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.1),
+                0 0 15px rgba(65,105,225,0.2);
+        }
+
+        .ai-insights h4 {
+            color: #1e3a8a;
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e7ff;
+            padding-bottom: 3px;
+        }
+
+        .insights-text {
+            font-size: 11px;
+            color: #1f2937;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .profile-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+
+        .profile-bar span {
+            width: 120px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 14px;
+            background: linear-gradient(145deg, #e0e0e0, #c0c0c0);
+            border: 1px inset #c0c0c0;
+            margin-left: 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 7px;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24, #c44569);
+            width: 0%;
+            transition: width 0.8s ease;
+            animation: progressGlow 2s ease-in-out infinite alternate;
+            border-radius: 6px;
+        }
+
+        @keyframes progressGlow {
+            from { box-shadow: 0 0 5px rgba(255,107,107,0.5); }
+            to { box-shadow: 0 0 15px rgba(238,90,36,0.8); }
+        }
+
+        .memory-nodes {
+            margin-top: 8px;
+        }
+
+        .memory-node {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            padding: 6px 10px;
+            background: linear-gradient(145deg, #fef2f2, #fecaca);
+            border: 1px solid #f87171;
+            border-radius: 6px;
+            font-size: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .memory-node span {
+            font-weight: bold;
+            color: #1e3a8a;
+            background: linear-gradient(90deg, #f87171, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .controls-info {
+            margin-top: 8px;
+            padding: 8px;
+            background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+            border: 2px solid #22c55e;
+            border-radius: 6px;
+            font-size: 10px;
+            color: #166534;
+        }
+
+        .controls-info h4 {
+            margin-bottom: 4px;
+            color: #15803d;
+            font-size: 11px;
+        }
+
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ff6b6b, #ee5a24);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            box-shadow: 0 0 15px rgba(255,107,107,0.8);
+            animation: cursorPulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes cursorPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor" id="customCursor"></div>
+    
+    <div class="desktop">
+        <div class="window">
+            <div class="title-bar">
+                <div class="title-bar-text">🔴 Memory Palace Breakout - AI Enhanced Classic</div>
+                <div class="title-bar-controls">
+                    <button>_</button>
+                    <button>□</button>
+                    <button>×</button>
+                </div>
+            </div>
+            
+            <div class="window-body">
+                <div class="game-header">
+                    <div class="stats-panel">
+                        <div class="stat-item">
+                            <span>Score:</span>
+                            <span id="gameScore" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Level:</span>
+                            <span id="gameLevel" class="stat-value">1</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Lives:</span>
+                            <span id="gameLives" class="stat-value">3</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>AI Analysis:</span>
+                            <span id="aiAnalysisLevel" class="stat-value">Learning</span>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="retro-btn" onclick="startNewGame()">New Game</button>
+                        <button class="retro-btn" onclick="pauseGame()">Pause</button>
+                        <button class="retro-btn" onclick="analyzeCognition()">Analyze Mind</button>
+                    </div>
+                </div>
+                
+                <div class="game-area">
+                    <div class="game-container">
+                        <div class="game-status" id="gameStatus">🔴 Move your mouse to control the paddle! Click "New Game" to start!</div>
+                        <canvas id="gameCanvas" width="650" height="450"></canvas>
+                    </div>
+                    
+                    <div class="ai-panel">
+                        <div class="ai-avatar">
+                            <div class="avatar-face" id="aiAvatar">🧠</div>
+                            <div class="thought-bubble" id="aiThoughts">
+                                Ready to analyze your paddle control patterns!
+                            </div>
+                        </div>
+                        <div class="ai-mood">
+                            Mood: <span id="aiMood">Excited</span>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <h4>🧠 Real-Time Analysis</h4>
+                            <div class="insights-text" id="aiInsights">
+                                Waiting for mouse movement data to analyze your reflexes...
+                            </div>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <h4>🎯 Control Patterns</h4>
+                            <div class="insights-text" id="controlPatterns">
+                                No patterns detected yet...
+                            </div>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <h4>📊 Cognitive Profile</h4>
+                            <div class="insights-text" id="cognitiveProfile">
+                                <div class="profile-bar">
+                                    <span>Reaction Speed:</span>
+                                    <div class="progress-bar"><div class="progress" id="reactionBar"></div></div>
+                                </div>
+                                <div class="profile-bar">
+                                    <span>Precision:</span>
+                                    <div class="progress-bar"><div class="progress" id="precisionBar"></div></div>
+                                </div>
+                                <div class="profile-bar">
+                                    <span>Anticipation:</span>
+                                    <div class="progress-bar"><div class="progress" id="anticipationBar"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <h4>🏛️ Memory Palace</h4>
+                            <div class="insights-text" id="memoryPalace">
+                                Building your motor control memory palace...
+                                <div class="memory-nodes">
+                                    <div class="memory-node">🎯 Paddle Moves: <span id="paddleMoves">0</span></div>
+                                    <div class="memory-node">⚡ Quick Reactions: <span id="quickReactions">0</span></div>
+                                    <div class="memory-node">🎪 Trick Shots: <span id="trickShots">0</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="controls-info">
+                            <h4>🎮 Controls</h4>
+                            <p>• Move mouse left/right to control paddle</p>
+                            <p>• Break all bricks to advance levels</p>
+                            <p>• AI analyzes your motor control patterns!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let canvas, ctx;
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameStats = {
+            score: 0,
+            level: 1,
+            lives: 3,
+            bricksDestroyed: 0,
+            paddleMoves: 0,
+            quickReactions: 0,
+            trickShots: 0,
+            mousePositions: [],
+            reactionTimes: [],
+            precisionHits: 0,
+            totalHits: 0
+        };
+        
+        // Game objects
+        let paddle = {
+            x: 325,
+            y: 420,
+            width: 100,
+            height: 12,
+            speed: 8
+        };
+        
+        let ball = {
+            x: 325,
+            y: 225,
+            radius: 10,
+            dx: 5,
+            dy: 5,
+            speed: 5
+        };
+        
+        let bricks = [];
+        let mouseX = 0;
+        let lastMouseTime = 0;
+        
+        // AI analysis variables
+        let aiThoughts = [
+            "🧠 Analyzing your paddle control precision...",
+            "🎯 I notice your reaction patterns!",
+            "⚡ Your mouse movements are fascinating!",
+            "🔍 Interesting anticipation strategies...",
+            "💡 Your motor control is developing!",
+            "🚀 Building your reflexes memory map...",
+            "✨ Your hand-eye coordination is unique!"
+        ];
+        
+        let aiMoods = ['Excited', 'Analytical', 'Impressed', 'Curious', 'Fascinated'];
+        
+        function initGame() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            setupEventListeners();
+            generateBricks();
+            
+            console.log('🔴 Memory Palace Breakout initialized!');
+        }
+        
+        function setupEventListeners() {
+            // Mouse movement for paddle control
+            canvas.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mousemove', updateCustomCursor);
+            
+            // Prevent context menu
+            canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+        
+        function updateCustomCursor(e) {
+            const cursor = document.getElementById('customCursor');
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+        }
+        
+        function handleMouseMove(e) {
+            if (!gameRunning) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const newMouseX = e.clientX - rect.left;
+            
+            // Record mouse movement for AI analysis
+            recordMouseMovement(newMouseX);
+            
+            // Update paddle position
+            mouseX = newMouseX;
+            paddle.x = mouseX - paddle.width / 2;
+            
+            // Keep paddle within bounds
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x > canvas.width - paddle.width) paddle.x = canvas.width - paddle.width;
+        }
+        
+        function recordMouseMovement(newMouseX) {
+            const currentTime = Date.now();
+            
+            gameStats.mousePositions.push({
+                x: newMouseX,
+                time: currentTime
+            });
+            
+            // Calculate reaction time
+            if (gameStats.mousePositions.length > 1) {
+                const timeDiff = currentTime - lastMouseTime;
+                if (timeDiff < 200 && timeDiff > 0) {
+                    gameStats.quickReactions++;
+                }
+                gameStats.reactionTimes.push(timeDiff);
+            }
+            
+            lastMouseTime = currentTime;
+            gameStats.paddleMoves++;
+            
+            // Keep arrays manageable
+            if (gameStats.mousePositions.length > 100) {
+                gameStats.mousePositions.shift();
+            }
+            if (gameStats.reactionTimes.length > 50) {
+                gameStats.reactionTimes.shift();
+            }
+            
+            updateAIAnalysis();
+        }
+        
+        function generateBricks() {
+            bricks = [];
+            const rows = 7;
+            const cols = 12;
+            const brickWidth = 55;
+            const brickHeight = 22;
+            const padding = 4;
+            const offsetTop = 60;
+            const offsetLeft = (canvas.width - (cols * (brickWidth + padding))) / 2;
+            
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    bricks.push({
+                        x: offsetLeft + col * (brickWidth + padding),
+                        y: offsetTop + row * (brickHeight + padding),
+                        width: brickWidth,
+                        height: brickHeight,
+                        color: colors[row],
+                        destroyed: false,
+                        points: (rows - row) * 10
+                    });
+                }
+            }
+        }
+        
+        function startNewGame() {
+            gameRunning = true;
+            gamePaused = false;
+            
+            // Reset game state
+            gameStats = {
+                score: 0,
+                level: 1,
+                lives: 3,
+                bricksDestroyed: 0,
+                paddleMoves: 0,
+                quickReactions: 0,
+                trickShots: 0,
+                mousePositions: [],
+                reactionTimes: [],
+                precisionHits: 0,
+                totalHits: 0
+            };
+            
+            // Reset game objects
+            paddle.x = 325;
+            ball.x = 325;
+            ball.y = 225;
+            ball.dx = 5;
+            ball.dy = 5;
+            
+            generateBricks();
+            updateUI();
+            updateGameStatus('🔴 Game started! Move your mouse to control the paddle!');
+            
+            gameLoop();
+            
+            console.log('🎮 New Breakout game started!');
+        }
+        
+        function pauseGame() {
+            if (!gameRunning) return;
+            
+            gamePaused = !gamePaused;
+            const pauseBtn = document.querySelector('.retro-btn:nth-child(2)');
+            pauseBtn.textContent = gamePaused ? 'Resume' : 'Pause';
+            
+            if (!gamePaused) {
+                gameLoop();
+            }
+        }
+        
+        function gameLoop() {
+            if (!gameRunning || gamePaused) return;
+            
+            update();
+            render();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function update() {
+            // Move ball
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+            
+            // Ball collision with walls
+            if (ball.x <= ball.radius || ball.x >= canvas.width - ball.radius) {
+                ball.dx = -ball.dx;
+            }
+            if (ball.y <= ball.radius) {
+                ball.dy = -ball.dy;
+            }
+            
+            // Ball collision with paddle
+            if (ball.y + ball.radius >= paddle.y && 
+                ball.x >= paddle.x && 
+                ball.x <= paddle.x + paddle.width) {
+                
+                ball.dy = -ball.dy;
+                gameStats.totalHits++;
+                
+                // Calculate precision (center hits are more precise)
+                const paddleCenter = paddle.x + paddle.width / 2;
+                const hitDistance = Math.abs(ball.x - paddleCenter);
+                if (hitDistance < paddle.width / 4) {
+                    gameStats.precisionHits++;
+                }
+                
+                // Add spin based on where ball hits paddle
+                const hitPos = (ball.x - paddle.x) / paddle.width;
+                ball.dx = (hitPos - 0.5) * 8;
+                
+                playSound('paddle');
+            }
+            
+            // Ball collision with bricks
+            for (let brick of bricks) {
+                if (!brick.destroyed && 
+                    ball.x >= brick.x && 
+                    ball.x <= brick.x + brick.width &&
+                    ball.y >= brick.y && 
+                    ball.y <= brick.y + brick.height) {
+                    
+                    brick.destroyed = true;
+                    ball.dy = -ball.dy;
+                    gameStats.score += brick.points;
+                    gameStats.bricksDestroyed++;
+                    
+                    // Check for trick shots (corner hits)
+                    if (ball.x <= brick.x + 5 || ball.x >= brick.x + brick.width - 5) {
+                        gameStats.trickShots++;
+                    }
+                    
+                    playSound('brick');
+                    break;
+                }
+            }
+            
+            // Check if ball is lost
+            if (ball.y > canvas.height) {
+                gameStats.lives--;
+                if (gameStats.lives <= 0) {
+                    gameOver();
+                } else {
+                    resetBall();
+                    playSound('life');
+                }
+            }
+            
+            // Check win condition
+            if (bricks.every(brick => brick.destroyed)) {
+                levelComplete();
+            }
+            
+            updateUI();
+        }
+        
+        function resetBall() {
+            ball.x = 325;
+            ball.y = 225;
+            ball.dx = 5;
+            ball.dy = 5;
+        }
+        
+        function levelComplete() {
+            gameStats.level++;
+            gameStats.score += 1000;
+            generateBricks();
+            resetBall();
+            
+            // Increase ball speed
+            ball.speed += 0.5;
+            ball.dx = ball.dx > 0 ? ball.speed : -ball.speed;
+            ball.dy = ball.dy > 0 ? ball.speed : -ball.speed;
+            
+            updateGameStatus(`🎉 Level ${gameStats.level}! The AI is impressed with your precision!`);
+            playSound('levelup');
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            updateGameStatus('💥 Game Over! The AI has analyzed your motor control patterns.');
+            playSound('gameover');
+            
+            setTimeout(() => {
+                analyzeCognition();
+            }, 2000);
+        }
+        
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw bricks
+            for (let brick of bricks) {
+                if (!brick.destroyed) {
+                    ctx.fillStyle = brick.color;
+                    ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                    
+                    // Brick border
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(brick.x, brick.y, brick.width, brick.height);
+                }
+            }
+            
+            // Draw paddle
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+            
+            // Paddle glow
+            ctx.shadowColor = '#ff6b6b';
+            ctx.shadowBlur = 10;
+            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+            ctx.shadowBlur = 0;
+            
+            // Draw ball
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Ball glow
+            ctx.shadowColor = '#fff';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+        
+        function updateUI() {
+            document.getElementById('gameScore').textContent = gameStats.score;
+            document.getElementById('gameLevel').textContent = gameStats.level;
+            document.getElementById('gameLives').textContent = gameStats.lives;
+        }
+        
+        function updateGameStatus(message) {
+            document.getElementById('gameStatus').textContent = message;
+        }
+        
+        function updateAIAnalysis() {
+            // Update AI thoughts
+            const randomThought = aiThoughts[Math.floor(Math.random() * aiThoughts.length)];
+            document.getElementById('aiThoughts').textContent = randomThought;
+            
+            // Update AI mood
+            const randomMood = aiMoods[Math.floor(Math.random() * aiMoods.length)];
+            document.getElementById('aiMood').textContent = randomMood;
+            
+            // Update AI avatar
+            const avatars = ['🧠', '🔴', '🎯', '🤖', '⚡'];
+            const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
+            document.getElementById('aiAvatar').textContent = randomAvatar;
+            
+            // Update control patterns
+            const patterns = [];
+            
+            if (gameStats.quickReactions > gameStats.paddleMoves * 0.3) {
+                patterns.push("⚡ Lightning-fast reflexes detected");
+            }
+            
+            if (gameStats.precisionHits > gameStats.totalHits * 0.7) {
+                patterns.push("🎯 Exceptional precision - center paddle hits");
+            }
+            
+            if (gameStats.trickShots > 3) {
+                patterns.push("🎪 Trick shot master - corner brick targeting");
+            }
+            
+            if (gameStats.paddleMoves > 100) {
+                patterns.push("🏃 Active controller - high movement frequency");
+            }
+            
+            document.getElementById('controlPatterns').innerHTML = patterns.length > 0 ? 
+                patterns.map(p => `• ${p}`).join('<br>') : 
+                "Analyzing your control patterns...";
+            
+            // Update cognitive profile bars
+            const avgReactionTime = gameStats.reactionTimes.length > 0 ? 
+                gameStats.reactionTimes.reduce((a, b) => a + b, 0) / gameStats.reactionTimes.length : 500;
+            
+            const reactionSpeed = Math.min(100, Math.max(0, 100 - (avgReactionTime / 10)));
+            const precision = gameStats.totalHits > 0 ? (gameStats.precisionHits / gameStats.totalHits) * 100 : 0;
+            const anticipation = Math.min(100, (gameStats.trickShots / Math.max(1, gameStats.bricksDestroyed)) * 200);
+            
+            document.getElementById('reactionBar').style.width = `${reactionSpeed}%`;
+            document.getElementById('precisionBar').style.width = `${precision}%`;
+            document.getElementById('anticipationBar').style.width = `${anticipation}%`;
+            
+            // Update memory palace
+            document.getElementById('paddleMoves').textContent = gameStats.paddleMoves;
+            document.getElementById('quickReactions').textContent = gameStats.quickReactions;
+            document.getElementById('trickShots').textContent = gameStats.trickShots;
+            
+            // Update main insights
+            const realTimeInsights = [
+                `🧠 Processing ${gameStats.paddleMoves} paddle movements`,
+                `🎯 Precision rate: ${Math.floor(precision)}%`,
+                `⚡ Reaction speed: ${Math.floor(reactionSpeed)}%`,
+                `🏛️ Memory palace contains ${gameStats.paddleMoves + gameStats.totalHits} motor patterns`,
+                `🔍 Anticipation skill: ${Math.floor(anticipation)}%`
+            ];
+            
+            document.getElementById('aiInsights').textContent = 
+                realTimeInsights[Math.floor(Math.random() * realTimeInsights.length)];
+            
+            // Update analysis level
+            const analysisLevels = ['Learning', 'Analyzing', 'Understanding', 'Mastering', 'Expert'];
+            const levelIndex = Math.min(4, Math.floor(gameStats.paddleMoves / 50));
+            document.getElementById('aiAnalysisLevel').textContent = analysisLevels[levelIndex];
+        }
+        
+        function analyzeCognition() {
+            const avgReactionTime = gameStats.reactionTimes.length > 0 ? 
+                gameStats.reactionTimes.reduce((a, b) => a + b, 0) / gameStats.reactionTimes.length : 0;
+            const precision = gameStats.totalHits > 0 ? (gameStats.precisionHits / gameStats.totalHits) * 100 : 0;
+            
+            const analysis = `
+🧠 Motor Control Cognitive Analysis:
+
+📊 Game Statistics:
+• Score: ${gameStats.score}
+• Level Reached: ${gameStats.level}
+• Paddle Movements: ${gameStats.paddleMoves}
+• Bricks Destroyed: ${gameStats.bricksDestroyed}
+
+🎯 Motor Control Profile:
+• Reaction Speed: ${Math.floor(Math.max(0, 100 - (avgReactionTime / 10)))}%
+• Precision Rate: ${Math.floor(precision)}%
+• Quick Reflexes: ${gameStats.quickReactions > gameStats.paddleMoves * 0.3 ? 'Excellent' : 'Good'}
+• Trick Shot Ability: ${gameStats.trickShots > 5 ? 'Master' : gameStats.trickShots > 2 ? 'Skilled' : 'Developing'}
+
+🏛️ Memory Palace Built:
+The AI has constructed a detailed map of your hand-eye coordination,
+reaction patterns, and motor control strategies!
+
+Your unique motor control fingerprint has been analyzed and stored.
+            `;
+            alert(analysis);
+        }
+        
+        function playSound(type) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                const frequencies = {
+                    paddle: 600,
+                    brick: 800,
+                    life: 300,
+                    levelup: 1000,
+                    gameover: 150
+                };
+                
+                oscillator.frequency.value = frequencies[type] || 440;
+                oscillator.type = type === 'gameover' ? 'sawtooth' : 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                // Sound not supported
+            }
+        }
+        
+        // Initialize game when page loads
+        window.addEventListener('load', () => {
+            console.log('🔴 Memory Palace Breakout loaded!');
+            initGame();
+            
+            // Start AI analysis immediately and show it automatically
+            updateAIAnalysis();
+            document.getElementById('aiInsights').textContent = 'AI is ready to analyze your motor control patterns! Start a new game to begin.';
+            document.getElementById('controlPatterns').innerHTML = '• 🧠 AI Neural Networks: Active<br>• 🎯 Pattern Recognition: Ready<br>• ⚡ Real-time Analysis: Enabled';
+            
+            // Start AI personality updates
+            setInterval(() => {
+                updateAIAnalysis();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
