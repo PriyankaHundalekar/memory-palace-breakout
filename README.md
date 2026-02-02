@@ -1,6 +1,9 @@
-# Memory Palace Breakout 🔴🧠
+# 🧠🔴Memory Palace Breakout 🔴🧠
 
 A revolutionary AI-enhanced Breakout game that analyzes your motor control patterns and builds a cognitive profile of your hand-eye coordination skills in real-time.
+
+<img width="1536" height="1024" alt="Cover Image" src="https://github.com/user-attachments/assets/b7109b7a-dab7-44a2-a91a-6b97fc6f52d1" />
+
 
 ## 🎮 Game Features
 
@@ -184,6 +187,16 @@ This project showcases Kiro AI's development capabilities:
 - Large, immersive game canvas with stunning visual effects
 - Comprehensive AI personality that learns your playing style
 - Detailed cognitive profiling and performance metrics
+
+
+![Cover Photo](https://github.com/user-attachments/assets/539a87c2-1cd7-48ba-afc8-4868c1f581cd)
+
+<img width="1600" height="861" alt="1" src="https://github.com/user-attachments/assets/78ef9703-34d5-4091-8275-2a795d43c8a4" />
+
+<img width="1607" height="850" alt="2" src="https://github.com/user-attachments/assets/2288fbbd-aa59-4741-836a-24ff15332ea7" />
+
+<img width="1605" height="856" alt="3" src="https://github.com/user-attachments/assets/c0a15422-d8f4-463e-a740-32b7c9365cc3" />
+
 
 ---
 
